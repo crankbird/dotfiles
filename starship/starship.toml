@@ -1,0 +1,89 @@
+# Polished Starship config inspired by Powerlevel10k
+# Drop this file into ~/.config/starship.toml
+
+add_newline = true
+command_timeout = 500
+scan_timeout = 100
+
+# Overall prompt layout. Keep it compact and fast.
+format = "$username$directory$git_branch$git_state$git_status$python$nodejs$jobs$character"
+
+[username]
+format = "[$user]($style_user)@"
+style_user = "bold #FFB86C" # soft orange
+disabled = false
+
+[directory]
+style = "bold #79D4FF" # cyan-ish
+read_only = "🔒"
+read_only_style = "bold #FF6B6B"
+truncation_length = 3
+truncate_to_repo = true
+truncation_symbol = "…/"
+format = "[$path]($style)"
+
+[git_branch]
+symbol = " "
+truncation_length = 4
+style = "bold #C792EA" # purple
+
+[git_state]
+format = " [$state]($style)"
+style = "bold yellow"
+
+[git_status]
+format = '([$all_status$ahead_behind]($style))'
+style = "#F07178" # coral-ish for changed state
+ahead = "⇡${count}"
+behind = "⇣${count}"
+conflicted = "✖${count}"
+staged = "●${count}"
+renamed = "➜${count}"
+deleted = "✖${count}"
+modified = "✚${count}"
+untracked = "…${count}"
+stashed = "⚑${count}"
+
+[package]
+disabled = false
+
+[nodejs]
+format = "via [$symbol($version)]($style)"
+style = "#F9E2AF" # pale yellow
+disabled = false
+
+[python]
+format = "via [$symbol($version)]($style)"
+detect_extensions = ["py"]
+style = "#8BE9FD" # light blue
+disabled = false
+
+[rust]
+format = "via [$symbol($version)]($style)"
+style = "#FFB86C"
+
+[jobs]
+threshold = 1
+format = "[$symbol($number)]($style)"
+style = "bold #F8F8F2"
+
+[character]
+success_symbol = "[❯](bold #A6E22E)"
+error_symbol = "[✖](bold #FF6B6B)"
+vimcmd_symbol = "[❮](bold #A6E22E)"
+
+[time]
+format = "on [$time]($style)"
+style = "#6272A4"
+
+[battery]
+full_symbol = "🔋"
+discharging_symbol = "🔋"
+charging_symbol = "⚡"
+format = "[$symbol ${percentage}]($style)"
+style = "#50FA7B"
+
+[cmd_duration]
+min_time = 2000
+format = "took [$duration]($style)"
+style = "bold #6272A4"
