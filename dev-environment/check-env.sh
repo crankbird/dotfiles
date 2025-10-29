@@ -65,17 +65,7 @@ else
     check_item false "Python: $py_version (Python 3.11+ recommended)"
 fi
 
-# Conda
-((total++))
-if command -v conda >/dev/null 2>&1; then
-    conda_version=$(conda --version | cut -d' ' -f2)
-    check_item true "Conda: $conda_version"
-    ((score++))
-else
-    check_item false "Conda: Not installed (recommended for AI/ML)"
-fi
-
-# UV
+# uv package manager
 ((total++))
 if command -v uv >/dev/null 2>&1; then
     uv_version=$(uv --version | cut -d' ' -f2)
@@ -85,11 +75,10 @@ else
     check_item false "uv: Not installed (recommended for fast Python packages)"
 fi
 
-# AI/ML Environment
+# AI/ML Environment (uv venv)
 ((total++))
-export PATH="$HOME/miniconda3/bin:$PATH"
-if command -v conda >/dev/null 2>&1 && conda env list | grep -q "aiml"; then
-    check_item true "AI/ML Environment: Available (aiml)"
+if [[ -d "$HOME/projects/dotfiles/.venv" ]] && [[ -f "$HOME/projects/dotfiles/.venv/bin/activate" ]]; then
+    check_item true "AI/ML Environment: Available (.venv)"
     ((score++))
 else
     check_item false "AI/ML Environment: Not found"
@@ -109,10 +98,19 @@ else
     fi
 fi
 
+# Set up environment for package checks
+DOTFILES_ROOT="$HOME/projects/dotfiles"
+if [[ -f "$DOTFILES_ROOT/.venv/bin/activate" ]]; then
+    source "$DOTFILES_ROOT/.venv/bin/activate"
+    PYTHON_CMD="python"
+else
+    PYTHON_CMD="python3"
+fi
+
 # PyTorch
 ((total++))
-if python -c "import torch; print(torch.__version__)" 2>/dev/null; then
-    torch_version=$(python -c "import torch; print(torch.__version__)" 2>/dev/null)
+if $PYTHON_CMD -c "import torch; print(torch.__version__)" 2>/dev/null; then
+    torch_version=$($PYTHON_CMD -c "import torch; print(torch.__version__)" 2>/dev/null)
     check_item true "PyTorch: $torch_version"
     ((score++))
 else
@@ -121,8 +119,8 @@ fi
 
 # CUDA support
 ((total++))
-if python -c "import torch; exit(0 if torch.cuda.is_available() else 1)" 2>/dev/null; then
-    cuda_version=$(python -c "import torch; print(torch.version.cuda)" 2>/dev/null)
+if $PYTHON_CMD -c "import torch; exit(0 if torch.cuda.is_available() else 1)" 2>/dev/null; then
+    cuda_version=$($PYTHON_CMD -c "import torch; print(torch.version.cuda)" 2>/dev/null)
     check_item true "PyTorch CUDA: $cuda_version (GPU acceleration available)"
     ((score++))
 else
@@ -137,8 +135,8 @@ for pkg_info in "${packages[@]}"; do
     name=${pkg_info##*:}
     name=${name:-$pkg}
     
-    if python -c "import $pkg" 2>/dev/null; then
-        version=$(python -c "import $pkg; print(getattr($pkg, '__version__', 'installed'))" 2>/dev/null || echo "installed")
+    if $PYTHON_CMD -c "import $pkg" 2>/dev/null; then
+        version=$($PYTHON_CMD -c "import $pkg; print(getattr($pkg, '__version__', 'installed'))" 2>/dev/null || echo "installed")
         check_item true "$name: $version"
         ((score++))
     else
@@ -225,13 +223,9 @@ fi
 
 echo
 echo "💡 Quick Commands:"
-echo "  conda activate aiml          # Activate AI environment"
-echo "  uv pip install <package>     # Fast package installation"
-echo "  jupyter lab --no-browser     # Start Jupyter Lab"
-echo "  gpu                          # Monitor GPU usage"
-echo "  ~/projects/dotfiles/dev-environment/install-aiml.sh  # Install AI/ML stack"
+echo "  source ~/projects/dotfiles/activate-aiml.sh  # Activate AI environment"
+echo "  uv pip install <package>                     # Fast package installation"
+echo "  jupyter lab --no-browser                     # Start Jupyter Lab"
+echo "  nvidia-smi                                    # Monitor GPU usage"
+echo "  ~/projects/dotfiles/dev-environment/install-aiml-uv.sh  # Install AI/ML stack"
 
-# Deactivate conda if we activated it
-if [[ "$env_active" == "false" ]] && command -v conda >/dev/null 2>&1; then
-    conda deactivate 2>/dev/null || true
-fi
