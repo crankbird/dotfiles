@@ -79,6 +79,10 @@ main() {
     echo "   - See terminal-setup/README.md for details"
     echo
     echo "3. Restart your terminal to see the new prompt!"
+    echo
+    echo "🤖 Optional: Set up AI/ML development environment:"
+    echo "   ./dev-environment/install-aiml.sh"
+    echo "   ./dev-environment/check-env.sh      # Check current status"
 }
 
 # Run main function

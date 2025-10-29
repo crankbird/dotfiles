@@ -6,6 +6,7 @@ Personal development environment configuration files for WSL/Ubuntu setup.
 
 - **Starship prompt** - Beautiful, fast shell prompt with git status, language indicators, and Powerlevel10k-inspired colors
 - **Windows Terminal setup** - Color schemes and font recommendations for the best terminal experience
+- **AI/ML Development Environment** - Complete setup for PyTorch, CUDA, and machine learning development optimized for RTX 4070
 
 ## Quick Install
 
@@ -14,9 +15,15 @@ Personal development environment configuration files for WSL/Ubuntu setup.
 git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Run the installer
+# Install starship prompt
 chmod +x install.sh
 ./install.sh
+
+# Optional: Install complete AI/ML development environment  
+./dev-environment/install-aiml.sh
+
+# Check environment health
+./dev-environment/check-env.sh
 ```
 
 ## Manual Setup
@@ -70,11 +77,15 @@ See `terminal-setup/README.md` for detailed instructions on:
 ```
 dotfiles/
 ├── starship/
-│   └── starship.toml          # Starship prompt configuration
+│   └── starship.toml              # Starship prompt configuration
 ├── terminal-setup/
-│   └── README.md              # Windows Terminal setup guide
-├── install.sh                 # Automated installer script
-└── README.md                  # This file
+│   └── README.md                  # Windows Terminal setup guide
+├── dev-environment/
+│   ├── ai-ml-setup.md            # Comprehensive AI/ML setup guide
+│   ├── install-aiml.sh           # Automated AI/ML environment installer
+│   └── check-env.sh              # Environment health checker
+├── install.sh                     # Main dotfiles installer script
+└── README.md                      # This file
 ```
 
 ## Customization
