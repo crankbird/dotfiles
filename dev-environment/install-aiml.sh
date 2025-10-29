@@ -190,6 +190,18 @@ install_system_tools() {
     sudo apt update >/dev/null 2>&1
     sudo apt install -y htop iotop ncdu tree >/dev/null 2>&1
     
+    # Install GitHub CLI if not present
+    if ! command -v gh >/dev/null 2>&1; then
+        log_info "Installing GitHub CLI..."
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg >/dev/null 2>&1
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list >/dev/null 2>&1
+        sudo apt update >/dev/null 2>&1
+        sudo apt install -y gh >/dev/null 2>&1
+        log_success "GitHub CLI installed"
+    else
+        log_success "GitHub CLI already installed"
+    fi
+    
     log_success "System tools installed"
 }
 
@@ -223,7 +235,7 @@ setup_vscode_extensions() {
 create_project_template() {
     log_info "Creating AI project template..."
     
-    mkdir -p ~/ai-projects/template/{data,models,notebooks,src,configs,outputs,logs}
+    mkdir -p ~/ai-projects/template/{data,models,notebooks,src,configs,outputs,logs,.github/workflows}
     
     # Environment template
     cat > ~/ai-projects/template/environment.yml << 'EOF'
@@ -291,9 +303,56 @@ conda activate project-env
 - `configs/` - Configuration files
 - `outputs/` - Results and outputs
 - `logs/` - Training logs
+
+## Quick Start with GitHub
+```bash
+# Initialize repo
+gh repo create my-ai-project --private
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/USERNAME/my-ai-project.git
+git push -u origin main
+```
 EOF
 
-    log_success "Project template created at ~/ai-projects/template"
+    # GitHub Actions workflow for Python projects
+    cat > ~/ai-projects/template/.github/workflows/python-app.yml << 'EOF'
+name: Python application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.11
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install uv
+        uv pip install -r requirements.txt
+    - name: Lint with flake8
+      run: |
+        uv pip install flake8
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    - name: Test with pytest
+      run: |
+        uv pip install pytest
+        pytest
+EOF
+    
+    log_success "Project template created at ~/ai-projects/template (with GitHub workflows)"
 }
 
 # Add helpful aliases
@@ -313,10 +372,18 @@ alias lab='jupyter lab --no-browser --port=8888'
 alias nb='jupyter notebook --no-browser --port=8888'
 alias uvinstall='uv pip install'
 alias uvlist='uv pip list'
+
+# GitHub CLI Shortcuts
+alias ghcreate='gh repo create'
+alias ghclone='gh repo clone' 
+alias ghpr='gh pr create'
+alias ghissue='gh issue create'
+alias ghview='gh repo view --web'
+alias ghstatus='gh pr status'
 EOF
     fi
     
-    log_success "Aliases added to ~/.bashrc (including uv shortcuts)"
+    log_success "Aliases added to ~/.bashrc (including GitHub CLI shortcuts)"
 }
 
 # Verify installation
@@ -373,12 +440,14 @@ main() {
     echo "📋 Next Steps:"
     echo "1. Restart your terminal (or run: source ~/.bashrc)"
     echo "2. Activate the environment: conda activate aiml"
-    echo "3. Test CUDA: python -c \"import torch; print(torch.cuda.is_available())\""
-    echo "4. Start Jupyter: jupyter lab --no-browser --port=8888"
-    echo "5. Create a new project: cp -r ~/ai-projects/template ~/ai-projects/my-project"
+    echo "3. Authenticate GitHub CLI: gh auth login"
+    echo "4. Test CUDA: python -c \"import torch; print(torch.cuda.is_available())\""
+    echo "5. Start Jupyter: jupyter lab --no-browser --port=8888"
+    echo "6. Create a new project: cp -r ~/ai-projects/template ~/ai-projects/my-project"
     echo
     echo "📚 Documentation: See dev-environment/ai-ml-setup.md for detailed usage"
-    echo "🔧 Aliases available: gpu, gpumem, gputemp, aiml, lab, nb"
+    echo "    echo "🔧 Aliases available: gpu, gpumem, gputemp, aiml, lab, nb, uvinstall, uvlist"
+    echo "🐙 GitHub workflow: gh repo create, gh pr create, gh issue create""
     echo
     echo "Happy AI/ML developing! 🤖"
 }

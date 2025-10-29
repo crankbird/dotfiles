@@ -15,6 +15,7 @@
 - **Python Package Manager**: uv (fast Rust-based package manager)
 - **Python AI/ML Stack**: PyTorch, TensorFlow, NumPy, etc.
 - **Environment Management**: Conda/Mamba (recommended over venv for AI/ML)
+- **GitHub CLI**: Essential for modern development workflow
 - **Node.js**: Useful for AI tooling, web interfaces, deployment
 - **Jupyter**: Essential for AI/ML experimentation
 - **Key Libraries**: Transformers, Diffusers, OpenCV, etc.
@@ -255,6 +256,37 @@ htop # Watch CPU/RAM usage
 
 # Test CUDA setup
 python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}, Device: {torch.cuda.get_device_name()}')"
+
+# GitHub workflow
+gh repo create my-ai-project --private
+gh pr create --title "Add new model" --body "Description"
+gh issue create --title "Bug report" --body "Details"
+```
+
+## GitHub CLI Integration
+
+Essential commands for AI/ML development:
+
+```bash
+# Authentication
+gh auth login
+
+# Repository management
+gh repo create my-ai-experiment --private --description "AI/ML experiment"
+gh repo clone username/repo-name
+gh repo view --web
+
+# Collaboration
+gh pr create --title "Add transformer model" --body "Implemented BERT fine-tuning"
+gh pr status
+gh pr merge --merge
+
+# Issues and discussions
+gh issue create --title "Model accuracy issue" --body "Details about the problem"
+gh issue list --assignee @me
+
+# Releases (for model sharing)
+gh release create v1.0 model.pth --title "Trained Model v1.0"
 ```
 
 ## Recommended First Projects

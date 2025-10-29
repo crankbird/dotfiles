@@ -187,6 +187,16 @@ else
     check_item false "Docker: Not installed"
 fi
 
+# GitHub CLI
+((total++))
+if command -v gh >/dev/null 2>&1; then
+    gh_version=$(gh --version | head -1 | cut -d' ' -f3)
+    check_item true "GitHub CLI: $gh_version"
+    ((score++))
+else
+    check_item false "GitHub CLI: Not installed"
+fi
+
 echo
 echo "📊 Summary"
 echo "----------"
