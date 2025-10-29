@@ -52,7 +52,28 @@ check_prerequisites() {
     log_success "Prerequisites check passed"
 }
 
-# Install Miniconda
+# Install UV (fast Python package manager)
+install_uv() {
+    if command -v uv >/dev/null 2>&1; then
+        log_success "uv already installed"
+        return 0
+    fi
+    
+    log_info "Installing uv (fast Python package manager)..."
+    
+    # Install uv
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    # Add to PATH for this session
+    export PATH="$HOME/.local/bin:$PATH"
+    
+    # Add to bashrc if not already there
+    if ! grep -q ".local/bin" ~/.bashrc; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+    fi
+    
+    log_success "uv installed"
+}
 install_miniconda() {
     if command -v conda >/dev/null 2>&1; then
         log_success "Conda already installed"
@@ -118,29 +139,30 @@ install_core_packages() {
 
 # Install AI/ML packages
 install_aiml_packages() {
-    log_info "Installing AI/ML packages..."
+    log_info "Installing AI/ML packages with uv (faster than pip)..."
     
     export PATH="$HOME/miniconda3/bin:$PATH"
+    export PATH="$HOME/.local/bin:$PATH"
     source ~/miniconda3/etc/profile.d/conda.sh
     conda activate aiml
     
-    # HuggingFace ecosystem
-    pip install -q transformers datasets accelerate diffusers tokenizers
+    # HuggingFace ecosystem (use uv for speed)
+    uv pip install transformers datasets accelerate diffusers tokenizers
     
     # Computer Vision
     conda install -y opencv pillow scikit-image -c conda-forge
     
-    # Machine Learning
-    pip install -q scikit-learn xgboost lightgbm optuna wandb
+    # Machine Learning (uv for pure Python packages)
+    uv pip install scikit-learn xgboost lightgbm optuna wandb
     
-    # Development tools
-    pip install -q black isort flake8 pytest ipywidgets tqdm rich
+    # Development tools (uv is much faster for these)
+    uv pip install black isort flake8 pytest ipywidgets tqdm rich
     
     # Specialized AI tools
-    pip install -q openai anthropic ultralytics librosa soundfile
-    pip install -q optimum onnx onnxruntime-gpu mlflow tensorboard
+    uv pip install openai anthropic ultralytics librosa soundfile
+    uv pip install optimum onnx onnxruntime-gpu mlflow tensorboard
     
-    log_success "AI/ML packages installed"
+    log_success "AI/ML packages installed with uv"
 }
 
 # Install Node.js
@@ -289,10 +311,12 @@ alias gputemp='nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader'
 alias aiml='conda activate aiml'
 alias lab='jupyter lab --no-browser --port=8888'
 alias nb='jupyter notebook --no-browser --port=8888'
+alias uvinstall='uv pip install'
+alias uvlist='uv pip list'
 EOF
     fi
     
-    log_success "Aliases added to ~/.bashrc"
+    log_success "Aliases added to ~/.bashrc (including uv shortcuts)"
 }
 
 # Verify installation
@@ -322,9 +346,15 @@ if torch.cuda.is_available():
 # Main installation
 main() {
     echo "🚀 Starting AI/ML environment setup..."
+    echo "This will install:"
+    echo "  • uv (fast Python package manager)"
+    echo "  • Miniconda (Python environment management)"
+    echo "  • PyTorch with CUDA support"
+    echo "  • AI/ML packages (using uv for speed)"
     echo "This will take 10-15 minutes depending on your internet connection."
     echo
     
+    install_uv
     check_prerequisites
     install_miniconda
     create_aiml_environment  

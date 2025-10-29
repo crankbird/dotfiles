@@ -12,6 +12,7 @@
 - **Tools**: Git, VS Code, Docker, curl, wget - Core dev tools present
 
 ### ❌ **Missing Critical Components**
+- **Python Package Manager**: uv (fast Rust-based package manager)
 - **Python AI/ML Stack**: PyTorch, TensorFlow, NumPy, etc.
 - **Environment Management**: Conda/Mamba (recommended over venv for AI/ML)
 - **Node.js**: Useful for AI tooling, web interfaces, deployment
@@ -20,7 +21,18 @@
 
 ## Recommended Setup for Lightweight AI/ML
 
-### 1. **Install Miniconda** (Better than pip for AI/ML)
+### 1. **Install UV** (Fast Python Package Manager)
+```bash
+# Install uv (much faster than pip)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# Test installation
+uv --version
+```
+
+### 2. **Install Miniconda** (Better than pip for AI/ML)
 ```bash
 # Install Miniconda
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -33,29 +45,29 @@ conda update conda
 conda config --set auto_activate_base false
 ```
 
-### 2. **Create AI/ML Environment**
+### 3. **Create AI/ML Environment** (Conda + UV hybrid approach)
 ```bash
 # Create a dedicated environment for AI/ML work
 conda create -n aiml python=3.11 -y
 conda activate aiml
 
-# Core scientific computing
+# Core scientific computing (conda for complex dependencies)
 conda install numpy scipy pandas matplotlib seaborn jupyter ipykernel -c conda-forge -y
 
-# PyTorch with CUDA support (RTX 4070 compatible)
+# PyTorch with CUDA support (conda for GPU compatibility)
 conda install pytorch pytorch-cuda=12.1 torchvision torchaudio -c pytorch -c nvidia -y
 
-# HuggingFace ecosystem
-pip install transformers datasets accelerate diffusers tokenizers
+# Pure Python packages (uv for speed)
+uv pip install transformers datasets accelerate diffusers tokenizers
 
-# Computer Vision
+# Computer Vision (conda for system dependencies)
 conda install opencv pillow scikit-image -c conda-forge -y
 
-# Additional ML libraries
-pip install scikit-learn xgboost lightgbm optuna wandb
+# Additional ML libraries (uv for pure Python packages)
+uv pip install scikit-learn xgboost lightgbm optuna wandb
 
-# Development tools
-pip install black isort flake8 pytest ipywidgets tqdm rich
+# Development tools (uv is much faster)
+uv pip install black isort flake8 pytest ipywidgets tqdm rich
 ```
 
 ### 3. **Install Node.js** (for AI tooling)
@@ -68,26 +80,33 @@ sudo apt-get install -y nodejs
 npm install -g @tensorflow/tfjs-node yaml-cli http-server
 ```
 
-### 4. **Specialized AI Tools**
+### 4. **Specialized AI Tools** (All with UV for speed)
 ```bash
 # Activate AI environment
 conda activate aiml
 
-# For LLM work
-pip install openai anthropic ollama litellm
+# For LLM work (uv is much faster for these)
+uv pip install openai anthropic ollama litellm
 
 # For computer vision
-pip install ultralytics roboflow supervision
+uv pip install ultralytics roboflow supervision
 
 # For audio processing  
-pip install librosa soundfile whisper-openai
+uv pip install librosa soundfile whisper-openai
 
 # For model optimization
-pip install optimum onnx onnxruntime-gpu
+uv pip install optimum onnx onnxruntime-gpu
 
 # For experiment tracking
-pip install mlflow tensorboard
+uv pip install mlflow tensorboard
 ```
+
+## Why UV + Conda?
+
+**Conda**: Best for system-level dependencies, Python versions, and packages with C extensions (PyTorch, NumPy, OpenCV)  
+**UV**: 10-100x faster than pip for pure Python packages, better dependency resolution
+
+This hybrid approach gives you the best of both worlds!
 
 ## RTX 4070 Mobile Optimization
 

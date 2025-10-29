@@ -75,6 +75,16 @@ else
     check_item false "Conda: Not installed (recommended for AI/ML)"
 fi
 
+# UV
+((total++))
+if command -v uv >/dev/null 2>&1; then
+    uv_version=$(uv --version | cut -d' ' -f2)
+    check_item true "uv: $uv_version (fast Python package manager)"
+    ((score++))
+else
+    check_item false "uv: Not installed (recommended for fast Python packages)"
+fi
+
 # AI/ML Environment
 ((total++))
 export PATH="$HOME/miniconda3/bin:$PATH"
@@ -196,6 +206,7 @@ fi
 echo
 echo "💡 Quick Commands:"
 echo "  conda activate aiml          # Activate AI environment"
+echo "  uv pip install <package>     # Fast package installation"
 echo "  jupyter lab --no-browser     # Start Jupyter Lab"
 echo "  gpu                          # Monitor GPU usage"
 echo "  ~/projects/dotfiles/dev-environment/install-aiml.sh  # Install AI/ML stack"
