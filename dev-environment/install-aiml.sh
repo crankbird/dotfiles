@@ -202,6 +202,20 @@ install_system_tools() {
         log_success "GitHub CLI already installed"
     fi
     
+    # Install Graphite CLI for pull-based workflows
+    if ! command -v gt >/dev/null 2>&1; then
+        log_info "Installing Graphite CLI (stacked diffs & pull-based workflow)..."
+        if command -v npm >/dev/null 2>&1; then
+            npm install -g @withgraphite/graphite-cli >/dev/null 2>&1
+        else
+            log_warning "npm not available, Graphite will need manual installation"
+            log_warning "Run: npm install -g @withgraphite/graphite-cli"
+        fi
+        log_success "Graphite CLI installation attempted"
+    else
+        log_success "Graphite CLI already installed"
+    fi
+    
     log_success "System tools installed"
 }
 
@@ -304,17 +318,50 @@ conda activate project-env
 - `outputs/` - Results and outputs
 - `logs/` - Training logs
 
-## Quick Start with GitHub
+## Quick Start with GitHub + Graphite
 ```bash
-# Initialize repo
+# Initialize repo with Graphite workflow
 gh repo create my-ai-project --private
 git init
+gt repo init
+
+# Add initial files
 git add .
 git commit -m "Initial commit"
 git branch -M main
 git remote add origin https://github.com/USERNAME/my-ai-project.git
 git push -u origin main
+
+# Start feature development
+gt branch create feature/data-pipeline
+# Make changes, commit, then:
+gt stack submit
 ```
+
+## Graphite Workflow
+- Use `gt branch create` for new features
+- Stack related changes with `gt stack submit`
+- Keep PRs small and focused
+- See dev-environment/graphite-workflow.md for detailed guide
+EOF
+
+    # Graphite configuration
+    cat > ~/ai-projects/template/.graphite_repo_config << 'EOF'
+{
+  "trunk": "main",
+  "ignorePatterns": [
+    "*.pth",
+    "*.pt",
+    "*.safetensors",
+    "/models/downloaded/",
+    "/data/raw/",
+    "/outputs/",
+    "/logs/",
+    "wandb/",
+    ".neptune/",
+    "*.ipynb_checkpoints"
+  ]
+}
 EOF
 
     # GitHub Actions workflow for Python projects
@@ -380,10 +427,18 @@ alias ghpr='gh pr create'
 alias ghissue='gh issue create'
 alias ghview='gh repo view --web'
 alias ghstatus='gh pr status'
+
+# Graphite (Stacked Diffs) Shortcuts
+alias gtcreate='gt branch create'
+alias gtstack='gt stack'
+alias gtsubmit='gt stack submit'
+alias gtsync='gt repo sync'
+alias gtlog='gt log'
+alias gtclean='gt branch delete'
 EOF
     fi
     
-    log_success "Aliases added to ~/.bashrc (including GitHub CLI shortcuts)"
+    log_success "Aliases added to ~/.bashrc (including Graphite shortcuts)"
 }
 
 # Verify installation
@@ -428,6 +483,7 @@ main() {
     install_core_packages
     install_aiml_packages
     install_nodejs
+    install_nodejs
     install_system_tools
     setup_vscode_extensions
     create_project_template
@@ -441,13 +497,15 @@ main() {
     echo "1. Restart your terminal (or run: source ~/.bashrc)"
     echo "2. Activate the environment: conda activate aiml"
     echo "3. Authenticate GitHub CLI: gh auth login"
-    echo "4. Test CUDA: python -c \"import torch; print(torch.cuda.is_available())\""
-    echo "5. Start Jupyter: jupyter lab --no-browser --port=8888"
-    echo "6. Create a new project: cp -r ~/ai-projects/template ~/ai-projects/my-project"
+    echo "4. Initialize Graphite: gt auth --token YOUR_GITHUB_TOKEN"
+    echo "5. Test CUDA: python -c \"import torch; print(torch.cuda.is_available())\""
+    echo "6. Start Jupyter: jupyter lab --no-browser --port=8888"
+    echo "7. Create a new project: cp -r ~/ai-projects/template ~/ai-projects/my-project"
     echo
     echo "📚 Documentation: See dev-environment/ai-ml-setup.md for detailed usage"
     echo "    echo "🔧 Aliases available: gpu, gpumem, gputemp, aiml, lab, nb, uvinstall, uvlist"
-    echo "🐙 GitHub workflow: gh repo create, gh pr create, gh issue create""
+    echo "🐙 GitHub workflow: gh repo create, gh pr create, gh issue create"
+    echo "📚 Graphite workflow: gt branch create, gt stack submit, gt repo sync""
     echo
     echo "Happy AI/ML developing! 🤖"
 }

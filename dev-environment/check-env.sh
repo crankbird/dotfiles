@@ -197,6 +197,16 @@ else
     check_item false "GitHub CLI: Not installed"
 fi
 
+# Graphite CLI
+((total++))
+if command -v gt >/dev/null 2>&1; then
+    gt_version=$(gt --version 2>/dev/null | head -1 || echo "installed")
+    check_item true "Graphite CLI: $gt_version (stacked diffs)"
+    ((score++))
+else
+    check_item false "Graphite CLI: Not installed (recommended for pull-based workflow)"
+fi
+
 echo
 echo "📊 Summary"
 echo "----------"
