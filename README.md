@@ -1,12 +1,18 @@
 # Dotfiles
 
-Personal development environment configuration files for WSL/Ubuntu setup.
+Personal development environment configuration files and terminal customization.
 
 ## What's Included
 
 - **Starship prompt** - Beautiful, fast shell prompt with git status, language indicators, and Powerlevel10k-inspired colors
-- **Windows Terminal setup** - Color schemes and font recommendations for the best terminal experience
-- **AI/ML Development Environment** - Complete setup for PyTorch, CUDA, and machine learning development optimized for RTX 4070
+- **Windows Terminal setup** - Color schemes and font recommendations for the best terminal experience  
+- **Personal configuration templates** - Shell configurations and personal development tools
+
+## Architecture Note
+
+This repository focuses on **personal configuration files only**. For infrastructure setup and development environment provisioning, see:
+- **Infrastructure Layer**: [crank-infrastructure](https://github.com/crankbird/crank-infrastructure) - Environment setup, containers, cloud deployment
+- **Platform Layer**: [crank-platform](https://github.com/crankbird/crank-platform) - Service mesh and governance
 
 ## Quick Install
 
@@ -15,16 +21,12 @@ Personal development environment configuration files for WSL/Ubuntu setup.
 git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 
-# Install starship prompt
+# Install starship prompt and personal configurations
 chmod +x install.sh
 ./install.sh
-
-# Optional: Install complete AI/ML development environment  
-./dev-environment/install-aiml.sh
-
-# Check environment health
-./dev-environment/check-env.sh
 ```
+
+For complete development environment setup, use [crank-infrastructure](https://github.com/crankbird/crank-infrastructure).
 
 ## Manual Setup
 
@@ -80,13 +82,16 @@ dotfiles/
 │   └── starship.toml              # Starship prompt configuration
 ├── terminal-setup/
 │   └── README.md                  # Windows Terminal setup guide
-├── dev-environment/
-│   ├── ai-ml-setup.md            # Comprehensive AI/ML setup guide
-│   ├── install-aiml.sh           # Automated AI/ML environment installer
-│   └── check-env.sh              # Environment health checker
+├── templates/                     # Configuration file templates
 ├── install.sh                     # Main dotfiles installer script
 └── README.md                      # This file
 ```
+
+## Related Repositories
+
+For infrastructure and development environment setup:
+- **[crank-infrastructure](https://github.com/crankbird/crank-infrastructure)** - Environment provisioning, containers, cloud setup
+- **[crank-platform](https://github.com/crankbird/crank-platform)** - Service mesh, security patterns, governance
 
 ## Customization
 
